@@ -1,8 +1,10 @@
-package rest
+package api
 
 import (
+	"fmt"
 	"net/http"
 
+	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/render"
 	"github.com/google/uuid"
 	"github.com/message-board/profile-go/pkg/requests"
@@ -16,6 +18,16 @@ func NewProfileResource() ProfileResource {
 	return ProfileResource{}
 }
 
+func HandlerFromMux(pr ProfileResource, r chi.Router) http.Handler {
+	r.Route("/profiles", func(r chi.Router) {
+		r.Get("/", pr.GetProfiles)
+		r.Get("/{userId}", pr.GetProfileByUserId)
+		r.Post("/", pr.CreateProfile)
+	})
+
+	return r
+}
+
 // ListProfiles godoc
 // @Summary List profiles
 // @Description get profiles
@@ -26,7 +38,7 @@ func NewProfileResource() ProfileResource {
 // @Failure 400 {object} responses.ErrorResponse
 // @Failure 404 {object} responses.ErrorResponse
 // @Failure 500 {object} responses.ErrorResponse
-// @Router /api/users [get]
+// @Router /api/profiles [get]
 func (pr ProfileResource) GetProfiles(w http.ResponseWriter, r *http.Request) {
 	profile := []responses.ProfileResponse{
 		responses.NewProfileResponse(uuid.New(), "test1", "test1"),
@@ -46,8 +58,15 @@ func (pr ProfileResource) GetProfiles(w http.ResponseWriter, r *http.Request) {
 // @Failure 400 {object} responses.ErrorResponse
 // @Failure 404 {object} responses.ErrorResponse
 // @Failure 500 {object} responses.ErrorResponse
-// @Router /api/users/{id} [get]
-func (pr ProfileResource) GetProfile(w http.ResponseWriter, r *http.Request, userId uuid.UUID) {
+// @Router /api/profiles/{userId} [get]
+func (pr ProfileResource) GetProfileByUserId(w http.ResponseWriter, r *http.Request) {
+	userIdParam := chi.URLParam(r, "userId")
+	userId, err := uuid.Parse(userIdParam)
+	if err != nil {
+		render.Render(w, r, responses.ErrorRenderer(fmt.Errorf("invalid format for parameter userId: %v", err)))
+		return
+	}
+
 	profile := responses.NewProfileResponse(
 		userId,
 		"test",
@@ -57,18 +76,18 @@ func (pr ProfileResource) GetProfile(w http.ResponseWriter, r *http.Request, use
 	render.Respond(w, r, profile)
 }
 
-// CreateUser godoc
-// @Summary Create user
-// @Description create user
-// @Tags users
+// CreateProfile godoc
+// @Summary Create profile
+// @Description create profile
+// @Tags profiles
 // @Accept  json
 // @Produce  json
-// @Param user body requests.CreateUserRequest true "Create user"
+// @Param profile body requests.CreateProfileRequest true "Create profile"
 // @Success 201 {object} responses.ProfileResponse
 // @Failure 400 {object} responses.ErrorResponse
 // @Failure 404 {object} responses.ErrorResponse
 // @Failure 500 {object} responses.ErrorResponse
-// @Router /api/users [post]
+// @Router /api/profiles [post]
 func (pr ProfileResource) CreateProfile(w http.ResponseWriter, r *http.Request) {
 	headerContentTtype := r.Header.Get("Content-Type")
 	if headerContentTtype != "application/json" {
@@ -82,9 +101,9 @@ func (pr ProfileResource) CreateProfile(w http.ResponseWriter, r *http.Request) 
 		return
 	}
 
-	// err := h.app.Commands.CreateUserCommandHandler.Handle(r.Context(), command)
+	// err := h.app.Commands.CreateProfileCommandHandler.Handle(r.Context(), command)
 	// if err != nil {
-	// 	util.WriteResponse(w, "Failed to create user "+err.Error(), http.StatusInternalServerError)
+	// 	util.WriteResponse(w, "Failed to create profile "+err.Error(), http.StatusInternalServerError)
 	// 	return
 	// }
 

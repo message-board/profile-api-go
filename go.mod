@@ -3,11 +3,14 @@ module github.com/message-board/profile-go
 go 1.17
 
 require (
+	github.com/go-chi/chi v4.0.2+incompatible
 	github.com/go-chi/chi/v5 v5.0.4
 	github.com/go-chi/render v1.0.1
 	github.com/google/uuid v1.3.0
-	github.com/sirupsen/logrus v1.8.1
+	github.com/spf13/pflag v1.0.5
 	github.com/swaggo/http-swagger v1.1.1
+	github.com/swaggo/swag v1.7.0
+	go.uber.org/zap v1.19.0
 )
 
 require (
@@ -21,9 +24,9 @@ require (
 	github.com/josharian/intern v1.0.0 // indirect
 	github.com/mailru/easyjson v0.7.6 // indirect
 	github.com/swaggo/files v0.0.0-20190704085106-630677cd5c14 // indirect
-	github.com/swaggo/swag v1.7.0 // indirect
+	go.uber.org/atomic v1.7.0 // indirect
+	go.uber.org/multierr v1.6.0 // indirect
 	golang.org/x/net v0.0.0-20201207224615-747e23833adb // indirect
-	golang.org/x/sys v0.0.0-20200930185726-fdedc70b468f // indirect
 	golang.org/x/text v0.3.4 // indirect
 	golang.org/x/tools v0.0.0-20201208062317-e652b2f42cc7 // indirect
 	gopkg.in/yaml.v2 v2.4.0 // indirect
