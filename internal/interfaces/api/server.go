@@ -41,7 +41,7 @@ func (s Server) RunServer(createHandler func(router chi.Router) http.Handler) er
 	router := chi.NewRouter()
 	s.setMiddlewares(router)
 
-	router.Get("/*", httpSwagger.Handler(
+	router.Get("/swagger/*", httpSwagger.Handler(
 		httpSwagger.URL("/swagger/doc.json"),
 	))
 
