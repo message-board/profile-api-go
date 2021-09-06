@@ -72,13 +72,13 @@ func (pr ProfileResource) GetProfile(w http.ResponseWriter, r *http.Request, use
 func (pr ProfileResource) CreateProfile(w http.ResponseWriter, r *http.Request) {
 	headerContentTtype := r.Header.Get("Content-Type")
 	if headerContentTtype != "application/json" {
-		render.Render(w, r, responses.ErrUnsupportedMediaType())
+		render.Render(w, r, responses.ErrUnsupportedMediaType)
 		return
 	}
 
 	request := &requests.CreateProfileRequest{}
 	if err := render.Decode(r, request); err != nil {
-		render.Render(w, r, responses.ErrInvalidRequest(err))
+		render.Render(w, r, responses.ErrorRenderer(err))
 		return
 	}
 

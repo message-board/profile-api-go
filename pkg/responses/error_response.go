@@ -7,33 +7,38 @@ import (
 )
 
 type ErrorResponse struct {
-	Error          error `json:"-"` // low-level runtime error
-	HTTPStatusCode int   `json:"-"` // http response status code
-
-	StatusText string `json:"status"`          // user-level status message
-	AppCode    int64  `json:"code,omitempty"`  // application-specific error code
-	ErrorText  string `json:"error,omitempty"` // application-level error message, for debugging
+	Err        error  `json:"-"`
+	StatusCode int    `json:"-"`
+	StatusText string `json:"status_text"`
+	Message    string `json:"message"`
 }
 
+var (
+	ErrUnsupportedMediaType = &ErrorResponse{StatusCode: 416, Message: "Unsupported Media Type"}
+	ErrMethodNotAllowed     = &ErrorResponse{StatusCode: 405, Message: "Method not allowed"}
+	ErrNotFound             = &ErrorResponse{StatusCode: 404, Message: "Resource not found"}
+	ErrBadRequest           = &ErrorResponse{StatusCode: 400, Message: "Bad request"}
+)
+
 func (e *ErrorResponse) Render(w http.ResponseWriter, r *http.Request) error {
-	render.Status(r, e.HTTPStatusCode)
+	render.Status(r, e.StatusCode)
 	return nil
 }
 
-func ErrUnsupportedMediaType() render.Renderer {
+func ErrorRenderer(err error) *ErrorResponse {
 	return &ErrorResponse{
-		Error:          nil,
-		HTTPStatusCode: 415,
-		StatusText:     "Unsupported Media Type",
-		ErrorText:      "Unsupported Media Type",
+		Err:        err,
+		StatusCode: 400,
+		StatusText: "Bad request",
+		Message:    err.Error(),
 	}
 }
 
-func ErrInvalidRequest(err error) render.Renderer {
+func ServerErrorRenderer(err error) *ErrorResponse {
 	return &ErrorResponse{
-		Error:          err,
-		HTTPStatusCode: 400,
-		StatusText:     "Invalid request.",
-		ErrorText:      err.Error(),
+		Err:        err,
+		StatusCode: 500,
+		StatusText: "Internal server error",
+		Message:    err.Error(),
 	}
 }
