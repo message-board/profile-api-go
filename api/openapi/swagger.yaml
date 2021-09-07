@@ -1,0 +1,137 @@
+basePath: /v1
+definitions:
+  requests.CreateProfileRequest:
+    properties:
+      firstName:
+        type: string
+      lastName:
+        type: string
+      userId:
+        type: string
+    type: object
+  responses.ErrorResponse:
+    properties:
+      message:
+        type: string
+      status_text:
+        type: string
+    type: object
+  responses.ProfileResponse:
+    properties:
+      firstName:
+        type: string
+      lastName:
+        type: string
+      userId:
+        type: string
+    type: object
+host: petstore.swagger.io
+info:
+  contact:
+    email: support@todo.io
+    name: TODO
+    url: http://todo.io/support
+  description: TODO.
+  license:
+    name: Apache 2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0.html
+  termsOfService: http://todo.io/terms
+  title: Message Board Profile Api
+  version: "1.0"
+paths:
+  /api/profiles:
+    get:
+      consumes:
+      - application/json
+      description: get profiles
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/responses.ProfileResponse'
+            type: array
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/responses.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/responses.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/responses.ErrorResponse'
+      summary: List profiles
+      tags:
+      - profiles
+    post:
+      consumes:
+      - application/json
+      description: create profile
+      parameters:
+      - description: Create profile
+        in: body
+        name: profile
+        required: true
+        schema:
+          $ref: '#/definitions/requests.CreateProfileRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/responses.ProfileResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/responses.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/responses.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/responses.ErrorResponse'
+      summary: Create profile
+      tags:
+      - profiles
+  /api/profiles/{userId}:
+    get:
+      consumes:
+      - application/json
+      description: get profile by user id
+      parameters:
+      - description: User ID
+        in: path
+        name: userId
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/responses.ProfileResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/responses.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/responses.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/responses.ErrorResponse'
+      summary: Get profile
+      tags:
+      - profiles
+swagger: "2.0"
