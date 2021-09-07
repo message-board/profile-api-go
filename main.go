@@ -29,16 +29,12 @@ func main() {
 	}()
 
 	srv := api.NewServer(log, addr)
-	go func() {
-		if err := srv.RunServer(func(router chi.Router) http.Handler {
-			return api.HandlerFromMux(
-				api.NewProfileResource(),
-				router,
-			)
-		}); err != nil {
-			os.Exit(1)
-		}
-	}()
+	srv.RunServer(func(router chi.Router) http.Handler {
+		return api.HandlerFromMux(
+			api.NewProfileResource(),
+			router,
+		)
+	})
 
 	<-c
 	log.Info("gracefully shutting down")

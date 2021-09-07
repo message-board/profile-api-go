@@ -2,6 +2,7 @@ package api
 
 import (
 	"net/http"
+	"os"
 
 	"github.com/go-chi/chi/middleware"
 	"github.com/go-chi/chi/v5"
@@ -37,7 +38,7 @@ func NewServer(log *zap.Logger, addr string) Server {
 	}
 }
 
-func (s Server) RunServer(createHandler func(router chi.Router) http.Handler) error {
+func (s Server) RunServer(createHandler func(router chi.Router) http.Handler) {
 	router := chi.NewRouter()
 	s.setMiddlewares(router)
 
@@ -49,13 +50,14 @@ func (s Server) RunServer(createHandler func(router chi.Router) http.Handler) er
 	router.Mount("/api", createHandler(router))
 
 	s.log.Info("Starting HTTP server")
-	if err := http.ListenAndServe(s.addr, router); err != nil {
-		s.log.Error("failed to start server", zap.Error(err))
-		return err
-	}
+	go func() {
+		if err := http.ListenAndServe(s.addr, router); err != nil {
+			s.log.Error("failed to start server", zap.Error(err))
+			os.Exit(1)
+		}
+	}()
 
 	s.log.Info("ready to serve requests on " + s.addr)
-	return nil
 }
 
 func (s Server) setMiddlewares(router *chi.Mux) {
